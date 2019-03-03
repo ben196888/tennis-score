@@ -40,11 +40,14 @@ export class Match {
     return `${gameScore}, ${pointScore}`;
   }
 
+  private isDeuce(): boolean {
+    return (
+      idxToPoint[this.points[0]] === 40 && idxToPoint[this.points[1]] === 40
+    );
+  }
+
   private getPointScore(): string {
-    if (
-      idxToPoint[this.points[0]] === 40 &&
-      idxToPoint[this.points[1]] === 40
-    ) {
+    if (this.isDeuce()) {
       return "Deuce";
     }
 
