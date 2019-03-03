@@ -57,5 +57,9 @@ describe("match", () => {
     }
     match.pointWonBy(playerOne);
     expect(match.score()).toEqual(`0-0, Advantage ${playerOne}`);
+    match.pointWonBy(playerTwo);
+    expect(match.score()).toEqual("0-0, Deuce");
+    match.pointWonBy(playerTwo);
+    expect(match.score()).toEqual(`0-0, Advantage ${playerTwo}`);
   });
 });
