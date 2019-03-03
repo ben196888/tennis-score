@@ -13,6 +13,7 @@ export class Match {
   private readonly players: [Player, Player];
   private readonly points: [PointIdx, PointIdx];
   private readonly games: [Game, Game];
+
   constructor(playerOne: Player, playerTwo: Player) {
     if (playerOne === playerTwo) {
       throw Error("duplicate player name");
@@ -21,6 +22,7 @@ export class Match {
     this.points = [0, 0];
     this.games = [0, 0];
   }
+
   public pointWonBy(player: Player): void {
     const playerIdx: number = this.players.findIndex(
       (p: Player) => p === player
@@ -33,10 +35,19 @@ export class Match {
 
   public score(): string {
     const gameScore = `${this.games[0]}-${this.games[1]}`;
-    const pointScore = `${idxToPoint[this.points[0]]}-${
-      idxToPoint[this.points[1]]
-    }`;
+    const pointScore = this.getPointScore();
 
     return `${gameScore}, ${pointScore}`;
+  }
+
+  private getPointScore(): string {
+    if (
+      idxToPoint[this.points[0]] === 40 &&
+      idxToPoint[this.points[1]] === 40
+    ) {
+      return "Deuce";
+    }
+
+    return `${idxToPoint[this.points[0]]}-${idxToPoint[this.points[1]]}`;
   }
 }

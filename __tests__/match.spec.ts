@@ -41,4 +41,12 @@ describe("match", () => {
     match.pointWonBy(playerOne);
     expect(match.score()).toEqual("0-0, 40-15");
   });
+
+  it("should handle deuce", () => {
+    for (let i = 0; i < 3; i = i + 1) {
+      match.pointWonBy(playerOne);
+      match.pointWonBy(playerTwo);
+    }
+    expect(match.score()).toEqual("0-0, Deuce");
+  });
 });
