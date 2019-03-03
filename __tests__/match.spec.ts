@@ -23,4 +23,11 @@ describe("match", () => {
   it("should return default score", () => {
     expect(match.score()).toEqual("0-0, 0-0");
   });
+
+  it("should throw an error when player not found", () => {
+    const playerNotExist: Player = "some random name";
+    expect(() => {
+      match.pointWonBy(playerNotExist);
+    }).toThrowError("player not found");
+  });
 });
