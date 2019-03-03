@@ -1,5 +1,8 @@
 export type Player = string;
+
 type Point = number; // 0, 15, 30, 40
+const pointToScore: string[] = ["0", "15", "30", "40"];
+
 type Game = number; // 0, 1, 2, ... 6, 7
 
 /**
@@ -29,7 +32,9 @@ export class Match {
 
   public score(): string {
     const gameScore = `${this.games[0]}-${this.games[1]}`;
-    const pointScore = `${this.points[0]}-${this.points[1]}`;
+    const pointScore = `${pointToScore[this.points[0]]}-${
+      pointToScore[this.points[1]]
+    }`;
 
     return `${gameScore}, ${pointScore}`;
   }

@@ -30,4 +30,15 @@ describe("match", () => {
       match.pointWonBy(playerNotExist);
     }).toThrowError("player not found");
   });
+
+  it("should return correct score", () => {
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("0-0, 15-0");
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("0-0, 30-0");
+    match.pointWonBy(playerTwo);
+    expect(match.score()).toEqual("0-0, 30-15");
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("0-0, 40-15");
+  });
 });
