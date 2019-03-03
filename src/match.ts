@@ -4,7 +4,7 @@ type PointIdx = number;
 type Point = 0 | 15 | 30 | 40;
 const idxToPoint: Point[] = [0, 15, 30, 40];
 
-type Deuce = number;
+type Deuce = number; // 0, 1, 2, ...
 
 type Game = number; // 0, 1, 2, ... 6, 7
 
