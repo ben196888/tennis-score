@@ -13,7 +13,7 @@ type Game = number; // 0, 1, 2, ... 6, 7
  */
 export class Match {
   private readonly players: [Player, Player];
-  private readonly points: [PointIdx, PointIdx];
+  private pointIdxs: [PointIdx, PointIdx];
   private readonly games: [Game, Game];
   private readonly dueces: [Deuce, Deuce];
 
@@ -22,7 +22,7 @@ export class Match {
       throw Error("duplicate player name");
     }
     this.players = [playerOne, playerTwo];
-    this.points = [0, 0];
+    this.pointIdxs = [0, 0];
     this.games = [0, 0];
     this.dueces = [0, 0];
   }
@@ -41,19 +41,33 @@ export class Match {
       return;
     }
 
-    this.points[playerIdx] = this.points[playerIdx] + 1;
+    this.pointIdxs[playerIdx] = this.pointIdxs[playerIdx] + 1;
+
+    // when player win the game
+    if (this.pointIdxs[playerIdx] === idxToPoint.length) {
+      this.games[playerIdx] = this.games[playerIdx] + 1;
+      // reset point index
+      this.pointIdxs = [0, 0];
+
+      return;
+    }
   }
 
   public score(): string {
     const gameScore = `${this.games[0]}-${this.games[1]}`;
     const pointScore = this.getPointScore();
 
+    if (pointScore === "") {
+      return `${gameScore}`;
+    }
+
     return `${gameScore}, ${pointScore}`;
   }
 
   private isDeuce(): boolean {
     return (
-      idxToPoint[this.points[0]] === 40 && idxToPoint[this.points[1]] === 40
+      idxToPoint[this.pointIdxs[0]] === 40 &&
+      idxToPoint[this.pointIdxs[1]] === 40
     );
   }
 
@@ -62,7 +76,14 @@ export class Match {
       return this.getDueceScore();
     }
 
-    return `${idxToPoint[this.points[0]]}-${idxToPoint[this.points[1]]}`;
+    if (
+      idxToPoint[this.pointIdxs[0]] === 0 &&
+      idxToPoint[this.pointIdxs[1]] === 0
+    ) {
+      return "";
+    }
+
+    return `${idxToPoint[this.pointIdxs[0]]}-${idxToPoint[this.pointIdxs[1]]}`;
   }
 
   private getDueceScore(): string {

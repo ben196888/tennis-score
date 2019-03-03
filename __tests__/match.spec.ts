@@ -21,7 +21,7 @@ describe("match", () => {
   });
 
   it("should return default score", () => {
-    expect(match.score()).toEqual("0-0, 0-0");
+    expect(match.score()).toEqual("0-0");
   });
 
   it("should throw an error when player not found", () => {
@@ -61,5 +61,12 @@ describe("match", () => {
     expect(match.score()).toEqual("0-0, Deuce");
     match.pointWonBy(playerTwo);
     expect(match.score()).toEqual(`0-0, Advantage ${playerTwo}`);
+  });
+
+  it("should handle player win the game in non-deuce game", () => {
+    for (let i = 0; i < 4; i = i + 1) {
+      match.pointWonBy(playerOne);
+    }
+    expect(match.score()).toEqual("1-0");
   });
 });
