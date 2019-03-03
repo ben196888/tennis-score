@@ -1,7 +1,7 @@
 export type Player = string;
 
-type Point = number; // 0, 15, 30, 40
-const pointToScore: string[] = ["0", "15", "30", "40"];
+type PointIdx = number;
+const idxToPoint: string[] = ["0", "15", "30", "40"];
 
 type Game = number; // 0, 1, 2, ... 6, 7
 
@@ -10,7 +10,7 @@ type Game = number; // 0, 1, 2, ... 6, 7
  */
 export class Match {
   private readonly players: [Player, Player];
-  private readonly points: [Point, Point];
+  private readonly points: [PointIdx, PointIdx];
   private readonly games: [Game, Game];
   constructor(playerOne: Player, playerTwo: Player) {
     if (playerOne === playerTwo) {
@@ -32,8 +32,8 @@ export class Match {
 
   public score(): string {
     const gameScore = `${this.games[0]}-${this.games[1]}`;
-    const pointScore = `${pointToScore[this.points[0]]}-${
-      pointToScore[this.points[1]]
+    const pointScore = `${idxToPoint[this.points[0]]}-${
+      idxToPoint[this.points[1]]
     }`;
 
     return `${gameScore}, ${pointScore}`;
