@@ -4,6 +4,8 @@ type PointIdx = number;
 type Point = 0 | 15 | 30 | 40;
 const idxToPoint: Point[] = [0, 15, 30, 40];
 
+type Deuce = number;
+
 type Game = number; // 0, 1, 2, ... 6, 7
 
 /**
@@ -13,6 +15,7 @@ export class Match {
   private readonly players: [Player, Player];
   private readonly points: [PointIdx, PointIdx];
   private readonly games: [Game, Game];
+  private readonly dueces: [Deuce, Deuce];
 
   constructor(playerOne: Player, playerTwo: Player) {
     if (playerOne === playerTwo) {
@@ -21,6 +24,7 @@ export class Match {
     this.players = [playerOne, playerTwo];
     this.points = [0, 0];
     this.games = [0, 0];
+    this.dueces = [0, 0];
   }
 
   public pointWonBy(player: Player): void {
@@ -30,6 +34,13 @@ export class Match {
     if (playerIdx < 0) {
       throw Error("player not found");
     }
+
+    if (this.isDeuce()) {
+      this.dueces[playerIdx] = this.dueces[playerIdx] + 1;
+
+      return;
+    }
+
     this.points[playerIdx] = this.points[playerIdx] + 1;
   }
 
@@ -48,9 +59,21 @@ export class Match {
 
   private getPointScore(): string {
     if (this.isDeuce()) {
-      return "Deuce";
+      return this.getDueceScore();
     }
 
     return `${idxToPoint[this.points[0]]}-${idxToPoint[this.points[1]]}`;
+  }
+
+  private getDueceScore(): string {
+    if (this.dueces[0] === this.dueces[1]) {
+      return "Deuce";
+    }
+
+    if (this.dueces[0] > this.dueces[1]) {
+      return `Advantage ${this.players[0]}`;
+    }
+
+    return `Advantage ${this.players[1]}`;
   }
 }

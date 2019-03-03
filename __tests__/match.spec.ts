@@ -49,4 +49,13 @@ describe("match", () => {
     }
     expect(match.score()).toEqual("0-0, Deuce");
   });
+
+  it("should handle advantage", () => {
+    for (let i = 0; i < 3; i = i + 1) {
+      match.pointWonBy(playerOne);
+      match.pointWonBy(playerTwo);
+    }
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual(`0-0, Advantage ${playerOne}`);
+  });
 });
