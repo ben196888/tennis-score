@@ -11,6 +11,8 @@ describe("match", () => {
 
   it("should be an Match Instance", () => {
     expect(match).toBeInstanceOf(Match);
+    expect(match.pointWonBy).toBeInstanceOf(Function);
+    expect(match.score).toBeInstanceOf(Function);
   });
 
   it("should throw an error when duplicated name", () => {
