@@ -59,7 +59,7 @@ export class Match {
   }
 
   public score(): string {
-    const gameScore = `${this.games[0]}-${this.games[1]}`;
+    const gameScore = this.getGameScore();
     const pointScore = this.getPointScore();
 
     if (pointScore === "") {
@@ -101,5 +101,9 @@ export class Match {
     }
 
     return `Advantage ${this.players[1]}`;
+  }
+
+  private getGameScore(): string {
+    return `${this.games[0]}-${this.games[1]}`;
   }
 }
