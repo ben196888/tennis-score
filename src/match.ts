@@ -1,4 +1,4 @@
-type Player = string;
+export type Player = string;
 type Point = number; // 0, 15, 30, 40
 type Game = number; // 0, 1, 2, ... 6, 7
 
