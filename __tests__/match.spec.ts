@@ -13,7 +13,6 @@ describe("match", () => {
     expect(match).toBeInstanceOf(Match);
     expect(match.pointWonBy).toBeInstanceOf(Function);
     expect(match.score).toBeInstanceOf(Function);
-    expect(match.winner).toBeUndefined();
   });
 
   it("should throw an error when duplicated name", () => {
@@ -88,6 +87,47 @@ describe("match", () => {
       match.pointWonBy(playerOne);
     }
     expect(match.score()).toEqual("6-0");
-    expect(match.winner).toEqual(playerOne);
+  });
+
+  it("should show correct tie break points when one player win at 7-5", () => {
+    for (let i = 0; i < 6; i = i + 1) {
+      for (let j = 0; j < 4; j = j + 1) {
+        match.pointWonBy(playerOne);
+      }
+      for (let j = 0; j < 4; j = j + 1) {
+        match.pointWonBy(playerTwo);
+      }
+    }
+    expect(match.score()).toEqual("6-6");
+    for (let i = 0; i < 5; i = i + 1) {
+      match.pointWonBy(playerOne);
+      match.pointWonBy(playerTwo);
+    }
+    expect(match.score()).toEqual("6-6, 5-5");
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("6-6, 6-5");
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("7-6");
+  });
+
+  it("should show correct tie break points when player win at 10-8", () => {
+    for (let i = 0; i < 6; i = i + 1) {
+      for (let j = 0; j < 4; j = j + 1) {
+        match.pointWonBy(playerOne);
+      }
+      for (let j = 0; j < 4; j = j + 1) {
+        match.pointWonBy(playerTwo);
+      }
+    }
+    expect(match.score()).toEqual("6-6");
+    for (let i = 0; i < 8; i = i + 1) {
+      match.pointWonBy(playerOne);
+      match.pointWonBy(playerTwo);
+    }
+    expect(match.score()).toEqual("6-6, 8-8");
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("6-6, 9-8");
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("7-6");
   });
 });

@@ -12,12 +12,11 @@ type Game = number; // 0, 1, 2, ... 6, 7
  * Match includes two player names, points, and games
  */
 export class Match {
-  public winner?: Player;
-
   private readonly players: [Player, Player];
   private pointIdxs: [PointIdx, PointIdx];
   private dueces: [Deuce, Deuce];
   private readonly games: [Game, Game];
+  private tieBreak: boolean;
 
   constructor(playerOne: Player, playerTwo: Player) {
     if (playerOne === playerTwo) {
@@ -26,7 +25,8 @@ export class Match {
     this.players = [playerOne, playerTwo];
     this.pointIdxs = [0, 0];
     this.games = [0, 0];
-    this.dueces = [0, 0];
+    this.dueces = [0, 0]; // The tie break scoring is similar to duece
+    this.tieBreak = false;
   }
 
   public pointWonBy(player: Player): void {
@@ -37,11 +37,17 @@ export class Match {
       throw Error("player not found");
     }
 
-    if (this.isDeuce()) {
+    // The tie break scoring is similar to duece
+    // except tie break has a minimum 7 to win
+    if (this.tieBreak || this.isDeuce()) {
       this.dueces[playerIdx] = this.dueces[playerIdx] + 1;
 
       // when player win the game
       if (Math.abs(this.dueces[0] - this.dueces[1]) >= 2) {
+        // player doesn't win the game when tie break point is less then 7
+        if (this.tieBreak && Math.max(this.dueces[0], this.dueces[1]) < 7) {
+          return;
+        }
         this.games[playerIdx] = this.games[playerIdx] + 1;
         // reset deuce and point index
         this.dueces = [0, 0];
@@ -77,16 +83,10 @@ export class Match {
   }
 
   private postGameWinningHanlder(): void {
-    const winSixGamesIdx = this.games.findIndex((g: number) => g === 6);
-
-    // any player win six games
-    if (winSixGamesIdx > -1) {
-      this.winner = this.players[winSixGamesIdx];
-
-      return;
+    // start the tie break point system
+    if (this.games.every((g: number) => g === 6)) {
+      this.tieBreak = true;
     }
-
-    // do nothing
   }
 
   private isDeuce(): boolean {
@@ -97,6 +97,10 @@ export class Match {
   }
 
   private getPointScore(): string {
+    if (this.tieBreak) {
+      return this.getTieBreakScore();
+    }
+
     if (this.isDeuce()) {
       return this.getDueceScore();
     }
@@ -121,6 +125,14 @@ export class Match {
     }
 
     return `Advantage ${this.players[1]}`;
+  }
+
+  private getTieBreakScore(): string {
+    if (this.dueces.every((d: number) => d === 0)) {
+      return "";
+    }
+
+    return `${this.dueces[0]}-${this.dueces[1]}`;
   }
 
   private getGameScore(): string {
