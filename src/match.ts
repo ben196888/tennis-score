@@ -12,6 +12,8 @@ type Game = number; // 0, 1, 2, ... 6, 7
  * Match includes two player names, points, and games
  */
 export class Match {
+  public winner?: Player;
+
   private readonly players: [Player, Player];
   private pointIdxs: [PointIdx, PointIdx];
   private dueces: [Deuce, Deuce];
@@ -37,10 +39,15 @@ export class Match {
 
     if (this.isDeuce()) {
       this.dueces[playerIdx] = this.dueces[playerIdx] + 1;
+
+      // when player win the game
       if (Math.abs(this.dueces[0] - this.dueces[1]) >= 2) {
         this.games[playerIdx] = this.games[playerIdx] + 1;
+        // reset deuce and point index
         this.dueces = [0, 0];
         this.pointIdxs = [0, 0];
+
+        this.postGameWinningHanlder();
       }
 
       return;
@@ -54,7 +61,7 @@ export class Match {
       // reset point index
       this.pointIdxs = [0, 0];
 
-      return;
+      this.postGameWinningHanlder();
     }
   }
 
@@ -67,6 +74,19 @@ export class Match {
     }
 
     return `${gameScore}, ${pointScore}`;
+  }
+
+  private postGameWinningHanlder(): void {
+    const winSixGamesIdx = this.games.findIndex((g: number) => g === 6);
+
+    // any player win six games
+    if (winSixGamesIdx > -1) {
+      this.winner = this.players[winSixGamesIdx];
+
+      return;
+    }
+
+    // do nothing
   }
 
   private isDeuce(): boolean {

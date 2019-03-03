@@ -13,6 +13,7 @@ describe("match", () => {
     expect(match).toBeInstanceOf(Match);
     expect(match.pointWonBy).toBeInstanceOf(Function);
     expect(match.score).toBeInstanceOf(Function);
+    expect(match.winner).toBeUndefined();
   });
 
   it("should throw an error when duplicated name", () => {
@@ -80,5 +81,13 @@ describe("match", () => {
     match.pointWonBy(playerOne);
     match.pointWonBy(playerOne);
     expect(match.score()).toEqual("1-0");
+  });
+
+  it("should have the winner", () => {
+    for (let i = 0; i < 4 * 6; i = i + 1) {
+      match.pointWonBy(playerOne);
+    }
+    expect(match.score()).toEqual("6-0");
+    expect(match.winner).toEqual(playerOne);
   });
 });
