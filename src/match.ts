@@ -1,7 +1,8 @@
 export type Player = string;
 
 type PointIdx = number;
-const idxToPoint: string[] = ["0", "15", "30", "40"];
+type Point = 0 | 15 | 30 | 40;
+const idxToPoint: Point[] = [0, 15, 30, 40];
 
 type Game = number; // 0, 1, 2, ... 6, 7
 
