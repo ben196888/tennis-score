@@ -69,4 +69,14 @@ describe("match", () => {
     }
     expect(match.score()).toEqual("1-0");
   });
+
+  it("should handle player win the game in deuce game", () => {
+    for (let i = 0; i < 3; i = i + 1) {
+      match.pointWonBy(playerOne);
+      match.pointWonBy(playerTwo);
+    }
+    match.pointWonBy(playerOne);
+    match.pointWonBy(playerOne);
+    expect(match.score()).toEqual("1-0");
+  });
 });

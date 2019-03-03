@@ -14,8 +14,8 @@ type Game = number; // 0, 1, 2, ... 6, 7
 export class Match {
   private readonly players: [Player, Player];
   private pointIdxs: [PointIdx, PointIdx];
+  private dueces: [Deuce, Deuce];
   private readonly games: [Game, Game];
-  private readonly dueces: [Deuce, Deuce];
 
   constructor(playerOne: Player, playerTwo: Player) {
     if (playerOne === playerTwo) {
@@ -37,6 +37,11 @@ export class Match {
 
     if (this.isDeuce()) {
       this.dueces[playerIdx] = this.dueces[playerIdx] + 1;
+      if (Math.abs(this.dueces[0] - this.dueces[1]) >= 2) {
+        this.games[playerIdx] = this.games[playerIdx] + 1;
+        this.dueces = [0, 0];
+        this.pointIdxs = [0, 0];
+      }
 
       return;
     }
