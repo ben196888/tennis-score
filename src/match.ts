@@ -13,7 +13,7 @@ enum ScoreSystem {
 }
 
 type Point = 0 | 15 | 30 | 40;
-const idxToPoint: Point[] = [0, 15, 30, 40];
+const mapToPoint: Point[] = [0, 15, 30, 40];
 
 type Game = number; // 0, 1, 2, ... 6, 7
 
@@ -114,11 +114,11 @@ export class Match {
 
   private getPointScore() {
     // Point system
-    if (idxToPoint[this.scores[0]] === 0 && idxToPoint[this.scores[1]] === 0) {
+    if (this.scores[0] === 0 && this.scores[1] === 0) {
       return "";
     }
 
-    return `${idxToPoint[this.scores[0]]}-${idxToPoint[this.scores[1]]}`;
+    return `${mapToPoint[this.scores[0]]}-${mapToPoint[this.scores[1]]}`;
   }
 
   private getDeuceScore() {
