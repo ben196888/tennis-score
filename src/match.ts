@@ -48,34 +48,30 @@ export class Match {
 
     if (this.scoreSystem === ScoreSystem.Point) {
       // Should change to Deuce system and reset scores
-      if (this.scores[0] === 3 && this.scores[1] === 3) {
+      if (this.scores.every((s: number) => s === 3)) {
         this.scoreSystem = ScoreSystem.Deuce;
         this.scores = [0, 0];
 
         return;
       }
 
-      // When player win the game
-      if (this.scores[playerIdx] === 4) {
-        this.winGameHanlder(playerIdx);
-
+      // When player score but does not win the game
+      if (this.scores[playerIdx] < 4) {
         return;
       }
       // tie break system and deuce system
     } else if (
       this.scoreSystem === ScoreSystem.TieBreak &&
-      Math.max(this.scores[0], this.scores[1]) < 7
+      this.scores.every((s: number) => s < 7)
     ) {
       // minimum 7 points to win tie break
       return;
-
-      // two poins ahead the opponent to win the game in deuce and tie break
-    } else if (Math.abs(this.scores[0] - this.scores[1]) >= 2) {
-      // when player win the game in tie break and deuce
-      this.winGameHanlder(playerIdx);
-
+    } else if (Math.abs(this.scores[0] - this.scores[1]) < 2) {
+      // have to ahead two poins to the opponent to win the game in deuce and tie break
       return;
     }
+
+    this.winGameHanlder(playerIdx);
   }
 
   public score(): string {
