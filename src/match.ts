@@ -1,10 +1,19 @@
 export type Player = string;
 
-type PointIdx = number;
+/**
+ * The enum of score system
+ * Point system max 4 points, should map to 0, 15, 30, 40
+ * Deuce system max inf, should not map
+ * TieBreak system max inf, should not map
+ */
+enum ScoreSystem {
+  Point, // max 4
+  Deuce, // max inf
+  TieBreak // max inf
+}
+
 type Point = 0 | 15 | 30 | 40;
 const idxToPoint: Point[] = [0, 15, 30, 40];
-
-type Deuce = number; // 0, 1, 2, ...
 
 type Game = number; // 0, 1, 2, ... 6, 7
 
@@ -13,20 +22,18 @@ type Game = number; // 0, 1, 2, ... 6, 7
  */
 export class Match {
   private readonly players: [Player, Player];
-  private pointIdxs: [PointIdx, PointIdx];
-  private dueces: [Deuce, Deuce];
+  private scoreSystem: ScoreSystem;
+  private scores: [number, number];
   private readonly games: [Game, Game];
-  private tieBreak: boolean;
 
   constructor(playerOne: Player, playerTwo: Player) {
     if (playerOne === playerTwo) {
       throw Error("duplicate player name");
     }
     this.players = [playerOne, playerTwo];
-    this.pointIdxs = [0, 0];
     this.games = [0, 0];
-    this.dueces = [0, 0]; // The tie break scoring is similar to duece
-    this.tieBreak = false;
+    this.scoreSystem = ScoreSystem.Point;
+    this.scores = [0, 0];
   }
 
   public pointWonBy(player: Player): void {
@@ -37,43 +44,43 @@ export class Match {
       throw Error("player not found");
     }
 
-    // The tie break scoring is similar to duece
-    // except tie break has a minimum 7 to win
-    if (this.tieBreak || this.isDeuce()) {
-      this.dueces[playerIdx] = this.dueces[playerIdx] + 1;
+    this.scores[playerIdx] = this.scores[playerIdx] + 1;
 
-      // when player win the game
-      if (Math.abs(this.dueces[0] - this.dueces[1]) >= 2) {
-        // player doesn't win the game when tie break point is less then 7
-        if (this.tieBreak && Math.max(this.dueces[0], this.dueces[1]) < 7) {
-          return;
-        }
-        this.games[playerIdx] = this.games[playerIdx] + 1;
-        // reset deuce and point index
-        this.dueces = [0, 0];
-        this.pointIdxs = [0, 0];
+    if (this.scoreSystem === ScoreSystem.Point) {
+      // Should change to Deuce system and reset scores
+      if (this.scores[0] === 3 && this.scores[1] === 3) {
+        this.scoreSystem = ScoreSystem.Deuce;
+        this.scores = [0, 0];
 
-        this.postGameWinningHanlder();
+        return;
       }
 
+      // When player win the game
+      if (this.scores[playerIdx] === 4) {
+        this.winGameHanlder(playerIdx);
+
+        return;
+      }
+      // tie break system and deuce system
+    } else if (
+      this.scoreSystem === ScoreSystem.TieBreak &&
+      Math.max(this.scores[0], this.scores[1]) < 7
+    ) {
+      // minimum 7 points to win tie break
       return;
-    }
 
-    this.pointIdxs[playerIdx] = this.pointIdxs[playerIdx] + 1;
+      // two poins ahead the opponent to win the game in deuce and tie break
+    } else if (Math.abs(this.scores[0] - this.scores[1]) >= 2) {
+      // when player win the game in tie break and deuce
+      this.winGameHanlder(playerIdx);
 
-    // when player win the game
-    if (this.pointIdxs[playerIdx] === idxToPoint.length) {
-      this.games[playerIdx] = this.games[playerIdx] + 1;
-      // reset point index
-      this.pointIdxs = [0, 0];
-
-      this.postGameWinningHanlder();
+      return;
     }
   }
 
   public score(): string {
     const gameScore = this.getGameScore();
-    const pointScore = this.getPointScore();
+    const pointScore = this.getScore();
 
     if (pointScore === "") {
       return `${gameScore}`;
@@ -82,57 +89,55 @@ export class Match {
     return `${gameScore}, ${pointScore}`;
   }
 
-  private postGameWinningHanlder(): void {
-    // start the tie break point system
+  private winGameHanlder(playerIdx: number): void {
+    this.games[playerIdx] = this.games[playerIdx] + 1;
+    // reset score system and scores
+    // start the tie break point system when both players won 6 games
     if (this.games.every((g: number) => g === 6)) {
-      this.tieBreak = true;
+      this.scoreSystem = ScoreSystem.TieBreak;
+    } else {
+      this.scoreSystem = ScoreSystem.Point;
+    }
+    this.scores = [0, 0];
+  }
+
+  private getScore(): string {
+    switch (this.scoreSystem) {
+      case ScoreSystem.TieBreak:
+        return this.getTieBreakScore();
+      case ScoreSystem.Deuce:
+        return this.getDeuceScore();
+      default:
+        return this.getPointScore();
     }
   }
 
-  private isDeuce(): boolean {
-    return (
-      idxToPoint[this.pointIdxs[0]] === 40 &&
-      idxToPoint[this.pointIdxs[1]] === 40
-    );
-  }
-
-  private getPointScore(): string {
-    if (this.tieBreak) {
-      return this.getTieBreakScore();
-    }
-
-    if (this.isDeuce()) {
-      return this.getDueceScore();
-    }
-
-    if (
-      idxToPoint[this.pointIdxs[0]] === 0 &&
-      idxToPoint[this.pointIdxs[1]] === 0
-    ) {
+  private getPointScore() {
+    // Point system
+    if (idxToPoint[this.scores[0]] === 0 && idxToPoint[this.scores[1]] === 0) {
       return "";
     }
 
-    return `${idxToPoint[this.pointIdxs[0]]}-${idxToPoint[this.pointIdxs[1]]}`;
+    return `${idxToPoint[this.scores[0]]}-${idxToPoint[this.scores[1]]}`;
   }
 
-  private getDueceScore(): string {
-    if (this.dueces[0] === this.dueces[1]) {
+  private getDeuceScore() {
+    if (this.scores[0] === this.scores[1]) {
       return "Deuce";
     }
-
-    if (this.dueces[0] > this.dueces[1]) {
+    if (this.scores[0] > this.scores[1]) {
       return `Advantage ${this.players[0]}`;
     }
 
     return `Advantage ${this.players[1]}`;
   }
 
-  private getTieBreakScore(): string {
-    if (this.dueces.every((d: number) => d === 0)) {
+  private getTieBreakScore() {
+    if (this.scores[0] === 0 && this.scores[1] === 0) {
       return "";
     }
 
-    return `${this.dueces[0]}-${this.dueces[1]}`;
+    return `${this.scores[0]}-${this.scores[1]}`;
   }
 
   private getGameScore(): string {
